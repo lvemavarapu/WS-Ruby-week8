@@ -1,46 +1,59 @@
-require "faker"
-require_relative("./team.rb")
-require_relative("./league.rb")
-require_relative("./team_member.rb")
-require_relative("./player.rb")
-require_relative("./coach.rb")
-require_relative("./staff.rb")
+require "tty-prompt"
+require_relative("./data.rb")
 
-coach1 = Coach.new(Faker::Sports::Basketball.coach)
-coach2 = Coach.new(Faker::Sports::Basketball.coach)
-coach3 = Coach.new(Faker::Sports::Basketball.coach)
-# puts coach1
-# puts coach2
-# puts coach3
+# return of the method data is stored in league(variable)
+   $league = data
+   # puts league
+   # puts league.print_teams
+   $prompt = TTY::Prompt.new
+ 
+   def select_option
+      answer = $prompt.select("what is your option?",["Ladder","Team's Info","Play game","Exit"])
+      answer
+   end
 
-team1_players =[]
-team2_players =[]
-team3_players =[]
+   # method to display the team's info when the option "Team's Info" is selected
+   def select_team
+      team = $prompt.select("Select your team",$league.print_teams)
+      return team
+   end
+   def play_game(home, away)
+      puts "Game between #{home} and #{away} and the game happening at #{home.stadium}"
+      print "Enter a score for #{home}:"
+      score_home = gets.chomp.to_i
+      print "Enter a score for #{away}:"
+      score_away = gets.chomp.to_i
+      if score_home > score_away
+         home.win
+         away.loss
+      else
+         away.win
+         home.loss
+      end 
+   end
 
-for i in 1..20
-    team1_players.push(Player.new(Faker::Sports::Basketball.player,i,Faker::Sports::Basketball.position))
-    team2_players.push(Player.new(Faker::Sports::Basketball.player,i,Faker::Sports::Basketball.position))
-    team3_players.push(Player.new(Faker::Sports::Basketball.player,i,Faker::Sports::Basketball.position))
-       
-end
-team1_staff=[]
-team2_staff=[]
-team3_staff=[]
-for i in 1..3
-    team1_staff.push(Staff.new(Faker::Name.name , Faker::Job.position))
-    team2_staff.push(Staff.new(Faker::Name.name , Faker::Job.position))
-    team3_staff.push(Staff.new(Faker::Name.name , Faker::Job.position))
-end
-team1 =Team.new("Lions","Brisbane","Suncorp","Maroon, black", team1_players,coach1,team1_staff)
-team2 =Team.new("Parrots","Sydney","Sunstat","green, yellow,black", team2_players,coach2,team2_staff)
-team3 =Team.new("Mermaids","Adelaide","Ocean","Maroon, black", team3_players,coach3,team3_staff)
-team1.team_info
-team2.team_info
-team3.team_info
-
-
-array_teams = [team1,team2,team3]
-league1 = League.new("BML","multisport","Brisbane Multi League", array_teams)
-tm1 =Team_Member.new(" James Smith")
-
-
+   system "clear"
+   puts "Welcome to the #{$league}"
+   option =""
+   while option != "Exit"
+      option = select_option
+      case option 
+      when "Ladder"
+        $league.print_ladder
+      when "Team's Info"
+         team = select_team
+         puts team.team_info
+      when "Play game"
+         home = select_team
+         away = select_team
+         #Invoking the method play_game
+         play_game(home, away)
+      else 
+         puts " See you next time!"
+         next
+      end
+      print "Press enter to continue.."
+      gets 
+      system "clear"
+   end
+ 
